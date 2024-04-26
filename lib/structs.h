@@ -1,7 +1,6 @@
 #ifndef STRUCT
 #define STRUCT
 
-
 typedef struct{
     int ten_min;
     int ten_max;
