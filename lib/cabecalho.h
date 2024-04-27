@@ -2,7 +2,7 @@
 #define cabecalho
 #include "structs.h"
 
-int has_char(char line[], int size);
+int string_to_int(char str[]);
 void inserir_paciente(Doente doentes[]);
 
 

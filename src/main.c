@@ -23,6 +23,26 @@ int string_to_int(char str[]) {
     return resultado;
 }
 
+void search(list_registo_t *list, int ID, l_node_t **prev, l_node_t **cur){
+
+    *prev = NULL;
+    *cur = list->front;
+    while(*cur != NULL && (*cur)->registo.ID < ID){
+        *prev = *cur;
+        *cur = (*cur)->next;
+    }
+}
+
+void remove_doente(,int ID){
+
+    l_node_t *node, *prev, *cur;
+
+    search(,ID, &prev, &)
+
+
+    
+}
+
 
 
 int main(){
@@ -57,29 +77,37 @@ int main(){
 
         switch (num_opcao) {
             case 1:
+                //Introduzir dados de um novo doente
                 printf("i");
                 break;
             case 2:
+                //Eliminar um doente existente
+
                 printf("i");
                 break;
             
             case 3:
+                //Listar todos os doentes por ordem alfabética
                 printf("i");
                 break;
             
             case 4:
+                //Listar os doentes com tensões máximas acima de um determinado valor (por ordem decrescente das mesmas)
                 printf("i");
                 break;
 
             case 5:
+                //Apresentar toda a informação de um determinado doente
                 printf("i");
                 break;
 
             case 6:
+                //Registar as tensões, o peso e a altura de um determinado doente num determinado dia. 
                 printf("i");
                 break;
             
             case 7:
+                //Sair
                 printf("A sair...\n");
                 break;
 
