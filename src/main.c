@@ -8,7 +8,6 @@
 
 #define MAX_PAC 100
 
-
 int main(){
 
     Doente doentes[MAX_PAC];
@@ -34,9 +33,6 @@ int main(){
         printf("6. Registar a informação de um determinado doente \n");
         printf("7. Sair\n");
         printf("Opcao: ");
-
-
-        
 
         switch (opcao) {
             case 1:
