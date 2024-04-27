@@ -13,7 +13,7 @@ int string_to_int(char str[]) {
     int i = 0;
 
     while (str[i] != '\0') {
-        if (str[i] >= '1' && str[i] <= '7') {
+        if (str[i] >= '0' && str[i] <= '9') {
             resultado = resultado * 10 + (str[i] - '0');
         } else {
             return 0;
@@ -23,21 +23,34 @@ int string_to_int(char str[]) {
     return resultado;
 }
 
-void search(list_registo_t *list, int ID, l_node_t **prev, l_node_t **cur){
+long string_to_long(char str[]) {
+    int resultado = 0;
+    int i = 0;
+
+    while (str[i] != '\0') {
+        if (str[i] >= '0' && str[i] <= '9') {
+            resultado = resultado * 10 + (str[i] - '0');
+        } else {
+            return 0;
+        }
+        i++;
+    }
+    return resultado;
+}
+
+/*void search(list_registo_t *list, int ID, l_node_doentes_t **prev, l_node_doentes_t **cur){
 
     *prev = NULL;
     *cur = list->front;
-    while(*cur != NULL && (*cur)->registo.ID < ID){
+    while(*cur != NULL && (*cur)->registos.ID < ID){
         *prev = *cur;
         *cur = (*cur)->next;
     }
-}
+}*/
 
-void remove_doente(,int ID){
+void remove_doente(int ID){
 
-    l_node_t *node, *prev, *cur;
-
-    search(,ID, &prev, &)
+    l_node_doentes_t *node, *prev, *cur;
 
 
     
@@ -51,8 +64,9 @@ int main(){
 
     char opcao[20];
     int num_opcao;
+    list_doentes_t listDoentes;
 
-    do {
+    do{
         
         printf("\n=== Menu ===\n");
         printf("1. Adicionar Doente\n");
@@ -77,7 +91,7 @@ int main(){
 
         switch (num_opcao) {
             case 1:
-                //Introduzir dados de um novo doente
+                insert(&listDoentes);
                 printf("i");
                 break;
             case 2:
@@ -114,7 +128,7 @@ int main(){
             default:
                 printf("Opcao invalida.\n");
         }
-    } while (num_opcao < 1 || num_opcao > 7);
+    } while (num_opcao != 7);
     
 
     
