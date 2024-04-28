@@ -48,19 +48,11 @@ long string_to_long(char str[]) {
     }
 }*/
 
-void remove_doente(int ID){
-
-    l_node_doentes_t *node, *prev, *cur;
-
-
-    
-}
 
 
 
 int main(){
 
-    Doente doentes[MAX_PAC];
 
     char opcao[20];
     int num_opcao;
@@ -92,12 +84,29 @@ int main(){
         switch (num_opcao) {
             case 1:
                 insert(&listDoentes);
-                printf("i");
                 break;
             case 2:
                 //Eliminar um doente existente
+                char var[50];
 
-                printf("i");
+
+                printf("Para remover, introduza o ID do doente:\n");
+                fgets(var, 50, stdin);
+
+                if(var[strlen(var) - 1] == '\n'){
+                    var[strlen(var) - 1] = '\0';
+                }
+
+                while(string_to_int(var) == 0){
+                    printf("ID inválido, introduza novamente:\n");
+                    fgets(var, 50, stdin);
+                    if(var[strlen(var) - 1] == '\n'){
+                        var[strlen(var) - 1] = '\0';
+                    }
+                }
+
+                remove_doente(&listDoentes,string_to_int(var));
+
                 break;
             
             case 3:

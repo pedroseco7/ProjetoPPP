@@ -4,6 +4,8 @@
 #include <cabecalho.h>
 #include <string.h>
 
+void remove_doente(list_doentes_t *list, int ID);
+
 void init(list_doentes_t *list){
 
     list -> num_elems = 0;
@@ -25,12 +27,11 @@ void clear(list_doentes_t *list){
     init(list);
 }
 
-void search(list_doentes_t *list, l_node_doentes_t **prev, l_node_doentes_t **cur){
+void search(list_doentes_t *list,int ID, l_node_doentes_t **prev, l_node_doentes_t **cur){
 
     *prev = NULL;
     *cur = list -> front;
-    while(*cur != NULL){
-
+    while(*cur != NULL && (*cur)->doente.ID < ID){
         *prev = *cur;
         *cur = (*cur)->next;
     }
@@ -42,6 +43,10 @@ void insert(list_doentes_t *list){
     if(node != NULL){
 
         char var[50];
+
+        node->doente.registos = (list_registo_t *)malloc(sizeof(list_registo_t));
+        node->doente.registos->num_elem = 0;
+        node->doente.registos->front = NULL;
 
         // ID
 
@@ -65,9 +70,9 @@ void insert(list_doentes_t *list){
 
         printf("Introduza o nome do doente:\n");
         fgets(node->doente.nome, 30, stdin);
-        for(int i = 0; i < strlen(node->doente.nome); i++){
+        for(size_t i = 0; i < strlen(node->doente.nome); i++){
             if(node->doente.nome[i] == '\n'){
-                node->doente.nome[i] == '\0';
+                node->doente.nome[i] = '\0';
             }
         }
 
@@ -175,7 +180,7 @@ void insert(list_doentes_t *list){
 
         while(arroba_counter == 0) {
             fgets(var, 50, stdin);
-            for (int i = 0; i < strlen(var); i++) {
+            for (size_t i = 0; i < strlen(var); i++) {
                 if (var[i] == '@') {
                     arroba_counter++;
                     break;
@@ -186,9 +191,11 @@ void insert(list_doentes_t *list){
             }
         }
         strcpy(node->doente.email, var);
-
-        search(list, &prev, &cur);
+ 
     }
+
+    search(list, node->doente.ID, &prev, &cur);
+
     if(prev != NULL){
         prev->next = node;
         node->next = cur;
@@ -199,3 +206,42 @@ void insert(list_doentes_t *list){
     }
     list->num_elems++;
 }
+
+
+void remove_doente(list_doentes_t *list, int ID){
+
+    l_node_doentes_t *prev, *cur;
+
+    search(list, ID, &prev, &cur);
+
+    if(cur != NULL && cur->doente.ID == ID){
+
+        l_node_registos_t *reg_prev = NULL;
+        l_node_registos_t *reg_cur = cur->doente.registos->front;
+
+        while(reg_cur != NULL){
+            reg_prev = reg_cur;
+            reg_cur = reg_cur->next;
+            free(reg_prev);
+        }
+
+        free(cur->doente.registos); // Liberar a memória da lista de registos
+
+        if(prev != NULL){
+            prev->next = cur->next;
+        }
+        else{
+            list->front = cur->next;
+        }
+        free(cur);
+
+        printf("Doente removido com sucesso!\n");
+
+        list->num_elems--;
+    }
+    else{
+        printf("ID não encontrado.\n");
+    }
+}
+
+//ver a segurança no email -> está valido quando é p.e pedro@@gmail.com

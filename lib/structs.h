@@ -11,7 +11,7 @@ typedef struct registo{
 
 typedef struct l_node_registos{
     registo_t registo;
-    struct l_node *next;
+    struct l_node_registos *next;
 }l_node_registos_t;
 
 typedef struct list_registo{
