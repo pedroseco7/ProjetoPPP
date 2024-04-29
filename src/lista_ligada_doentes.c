@@ -37,12 +37,20 @@ void search(list_doentes_t *list,int ID, l_node_doentes_t **prev, l_node_doentes
     }
 }
 
-void insert(list_doentes_t *list){
+
+
+void insert(list_doentes_t *list, int contador){
     l_node_doentes_t *node = (l_node_doentes_t *)malloc(sizeof(l_node_doentes_t));
     l_node_doentes_t *prev, *cur;
     if(node != NULL){
 
         char var[50];
+
+        FILE *f = fopen("doentes.txt", "a+");
+        if (f == NULL) {
+            printf("Erro ao abrir o arquivo doentes.txt.\n");
+            return;
+        }
 
         node->doente.registos = (list_registo_t *)malloc(sizeof(list_registo_t));
         node->doente.registos->num_elem = 0;
@@ -50,31 +58,25 @@ void insert(list_doentes_t *list){
 
         // ID
 
-        printf("Introduza um ID válido para o doente:\n");
-        fgets(var, 50, stdin);
+        node->doente.ID = contador;
 
-        if(var[strlen(var) - 1] == '\n'){
-            var[strlen(var) - 1] = '\0';
-        }
-
-        while(string_to_int(var) == 0){
-            printf("ID inválido, introduza novamente:\n");
-            fgets(var, 50, stdin);
-            if(var[strlen(var) - 1] == '\n'){
-                var[strlen(var) - 1] = '\0';
-            }
-        }
-        node->doente.ID = string_to_int(var);
+        fprintf(f,"%d\n",node->doente.ID);
 
         // NOME
 
         printf("Introduza o nome do doente:\n");
-        fgets(node->doente.nome, 30, stdin);
-        for(size_t i = 0; i < strlen(node->doente.nome); i++){
-            if(node->doente.nome[i] == '\n'){
-                node->doente.nome[i] = '\0';
-            }
+        fgets(var, 30, stdin);
+
+        if(var[strlen(var) - 1] == '\n'){
+            var[strlen(var) - 1] = '\0';
         }
+        
+        strcpy(node->doente.nome,var);
+
+        fputs(node->doente.nome,f);
+        fputs("\n",f);
+
+
 
         // DIA - Nascimento
 
@@ -94,6 +96,8 @@ void insert(list_doentes_t *list){
         }
         node->doente.dia = string_to_int(var);
 
+        fprintf(f,"%d/",string_to_int(var));
+
         // MES - Nascimento
 
         printf("Introduza o mês de nascimento do doente:\n");
@@ -110,6 +114,8 @@ void insert(list_doentes_t *list){
         }
         node->doente.mes = string_to_int(var);
 
+        fprintf(f,"%d/",string_to_int(var));
+
         // ANO - Nascimento
 
         printf("Introduza o ano de nascimento do doente:\n");
@@ -125,6 +131,8 @@ void insert(list_doentes_t *list){
             }
         }
         node->doente.mes = string_to_int(var);
+
+        fprintf(f,"%d\n",string_to_int(var));
 
         // CC
 
@@ -157,6 +165,9 @@ void insert(list_doentes_t *list){
 
         strcpy(node->doente.cc, var);
 
+        fputs(var,f);
+        fputs("\n",f);
+
         // Telemóvel
 
         printf("Introduza o número de telemóvel do doente:\n");
@@ -172,6 +183,8 @@ void insert(list_doentes_t *list){
             }
         }
         node->doente.telemovel = string_to_long(var);
+
+        fprintf(f,"%d\n",string_to_int(var));
 
         // Email
 
@@ -191,6 +204,10 @@ void insert(list_doentes_t *list){
             }
         }
         strcpy(node->doente.email, var);
+
+        fputs(var,f);
+
+        fclose(f);
  
     }
 

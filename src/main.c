@@ -38,25 +38,41 @@ long string_to_long(char str[]) {
     return resultado;
 }
 
-/*void search(list_registo_t *list, int ID, l_node_doentes_t **prev, l_node_doentes_t **cur){
-
-    *prev = NULL;
-    *cur = list->front;
-    while(*cur != NULL && (*cur)->registos.ID < ID){
-        *prev = *cur;
-        *cur = (*cur)->next;
-    }
-}*/
-
-
-
-
 int main(){
 
 
     char opcao[20];
     int num_opcao;
     list_doentes_t listDoentes;
+
+    FILE *file = fopen("doentes.txt","r");
+    int contador_ID = 0;
+
+    if(file == NULL){ //se nao existir
+        printf("A criar o ficheiro dos doentes...\n");
+        file = fopen("doentes.txt","w");
+        fclose(file);
+    }
+    else{ //se ja existir, temos de percorrer o ficheiro, encontrar o ID de maior valor para que seja retomado com o valor do ID
+
+        char ler_linha[100];
+        int linha = 0;
+
+        while(fgets(ler_linha,sizeof(ler_linha),file) != NULL){
+            linha++;
+            if(ler_linha[strlen(ler_linha)-1] == '\n'){
+                ler_linha[strlen(ler_linha)-1] = '\0';
+            }
+            if(linha%6 == 1){ //Os ID's estão nas posições 1,7,13,...
+                int id = string_to_int(ler_linha);
+                if(id>contador_ID){
+                    contador_ID = id;
+                }
+            }   
+        }
+
+        fclose(file);
+    }
 
     do{
         
@@ -83,7 +99,8 @@ int main(){
 
         switch (num_opcao) {
             case 1:
-                insert(&listDoentes);
+                contador_ID++;
+                insert(&listDoentes, contador_ID);
                 break;
             case 2:
                 //Eliminar um doente existente

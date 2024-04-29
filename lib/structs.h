@@ -2,6 +2,9 @@
 #define STRUCT
 
 typedef struct registo{
+    int dia;
+    int mes;
+    int ano;
     int ten_min;
     int ten_max;
     int peso;
