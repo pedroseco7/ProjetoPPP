@@ -82,7 +82,7 @@ int main(){
         printf("3. Listar Doente por Ordem Alfabética\n");
         printf("4. Listar os Doentes com Tensões Máximas acima de um determinado valor\n");
         printf("5. Apresentar a informação de um doente\n");
-        printf("6. Registar a informação de um determinado doente \n");
+        printf("6. Registar a informação de um doente num determinado dia \n");
         printf("7. Sair\n");
         printf("Opção que quer selecionar: ");
 
@@ -155,21 +155,6 @@ int main(){
                 printf("Opcao invalida.\n");
         }
     } while (num_opcao != 7);
-    
-
-    
-
-    
-
-    
-    
-
-
-
-    
-    
-
-
 
     return 0;
 }
