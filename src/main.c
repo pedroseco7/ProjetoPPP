@@ -45,12 +45,12 @@ int main(){
     int num_opcao;
     list_doentes_t listDoentes;
 
-    FILE *file = fopen("doentes.txt","r");
+    FILE *file = fopen("docs/doentes.txt","r");
     int contador_ID = 0;
 
     if(file == NULL){ //se nao existir
         printf("A criar o ficheiro dos doentes...\n");
-        file = fopen("doentes.txt","w");
+        file = fopen("docs/doentes.txt","w");
         fclose(file);
     }
     else{ //se ja existir, temos de percorrer o ficheiro, encontrar o ID de maior valor para que seja retomado com o valor do ID
@@ -127,8 +127,7 @@ int main(){
                 break;
             
             case 3:
-                //Listar todos os doentes por ordem alfabética
-                printf("i");
+                ordem_alfabetica(&listDoentes);
                 break;
             
             case 4:

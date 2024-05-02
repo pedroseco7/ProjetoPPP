@@ -38,7 +38,7 @@ void search(list_doentes_t *list,int ID, l_node_doentes_t **prev, l_node_doentes
 }
 
 void escreve_ficheiro(int ID, char nome[], int dia, int mes, int ano, char cc[], long telemovel, char email[]){
-    FILE *f = fopen("doentes.txt", "a+");
+    FILE *f = fopen("docs/doentes.txt", "a+");
     if (f == NULL) {
         printf("Erro ao abrir o arquivo doentes.txt.\n");
 
@@ -195,7 +195,7 @@ void insert(list_doentes_t *list, int contador){
                     break;
                 }
             }
-            if(arroba_counter == 0) {
+            if(arroba_counter != 1) {
                 printf("Email inválido, introduza novamente:\n");
             }
         }
@@ -254,6 +254,77 @@ void remove_doente(list_doentes_t *list, int ID){
     else{
         printf("ID não encontrado.\n");
     }
+}
+
+void ordem_alfabetica(list_doentes_t *list){
+
+    l_node_doentes_t *elem1, *elem2;
+    char array_nomes[list->num_elems-1][100];
+    char ultima_str[100];
+    elem1 = list->front;
+    for(int i = 0; i < list->num_elems; i++){
+        elem2 = elem1;
+        strcpy(ultima_str, elem1->doente.nome);
+        for(int k = i; k < list->num_elems; k++){
+
+            if(strcmp(ultima_str, elem2->doente.nome) > 0){
+                strcpy(ultima_str, elem2->doente.nome);
+            }
+            elem2 = elem2->next;
+
+        }
+        strcpy(array_nomes[i], elem1->doente.nome);
+        elem1 = elem1->next;
+    }
+
+    for(int i = 0; i < list->num_elems; i++){
+        for(int j = i; j < list->num_elems; j++) {
+            char aux[100];
+            if(strcmp(array_nomes[i], array_nomes[j]) > 0){
+                strcpy(aux, array_nomes[i]);
+                strcpy(array_nomes[i], array_nomes[j]);
+                strcpy(array_nomes[j], aux);
+            }
+
+        }
+    }
+    printf("Ordem Alfabética dos Doentes:\n");
+    for(int i = 0; i < list->num_elems; i++){
+        printf("%s\n", array_nomes[i]);
+    }
+}
+
+
+void recolhe_info_fich(list_doentes_t *list){
+
+    FILE *file = fopen("docs/doentes.txt", "r");
+
+    if(file != NULL) {
+
+        l_node_doentes_t *node = (l_node_doentes_t *)malloc(sizeof(l_node_doentes_t));
+        l_node_doentes_t *prev, *cur;
+
+        if(node != NULL) {
+
+            char ler_linha[100];
+            int linha = 0;
+
+            while (fgets(ler_linha, sizeof(ler_linha), file) != NULL) {
+                linha++;
+                if (ler_linha[strlen(ler_linha) - 1] == '\n') {
+                    ler_linha[strlen(ler_linha) - 1] = '\0';
+                }
+                if (linha % 6 == 1) {
+                    int id = string_to_int(ler_linha);
+                }
+
+
+            }
+        }
+
+    }
+
+
 }
 
 //ver a segurança no email -> está valido quando é p.e pedro@@gmail.com
