@@ -73,7 +73,7 @@ int main(){
 
         fclose(file);
     }
-
+    recolhe_info_fich(&listDoentes);
     do{
         
         printf("\n=== Menu ===\n");

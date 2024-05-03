@@ -262,10 +262,10 @@ void ordem_alfabetica(list_doentes_t *list){
     char array_nomes[list->num_elems-1][100];
     char ultima_str[100];
     elem1 = list->front;
-    for(int i = 0; i < list->num_elems; i++){
+    for(size_t i = 0; i < list->num_elems; i++){
         elem2 = elem1;
         strcpy(ultima_str, elem1->doente.nome);
-        for(int k = i; k < list->num_elems; k++){
+        for(size_t k = i; k < list->num_elems; k++){
 
             if(strcmp(ultima_str, elem2->doente.nome) > 0){
                 strcpy(ultima_str, elem2->doente.nome);
@@ -277,8 +277,8 @@ void ordem_alfabetica(list_doentes_t *list){
         elem1 = elem1->next;
     }
 
-    for(int i = 0; i < list->num_elems; i++){
-        for(int j = i; j < list->num_elems; j++) {
+    for(size_t i = 0; i < list->num_elems; i++){
+        for(size_t j = i; j < list->num_elems; j++) {
             char aux[100];
             if(strcmp(array_nomes[i], array_nomes[j]) > 0){
                 strcpy(aux, array_nomes[i]);
@@ -289,41 +289,75 @@ void ordem_alfabetica(list_doentes_t *list){
         }
     }
     printf("Ordem Alfabética dos Doentes:\n");
-    for(int i = 0; i < list->num_elems; i++){
+    for(size_t i = 0; i < list->num_elems; i++){
         printf("%s\n", array_nomes[i]);
     }
 }
 
 
 void recolhe_info_fich(list_doentes_t *list){
-
     FILE *file = fopen("docs/doentes.txt", "r");
 
     if(file != NULL) {
 
-        l_node_doentes_t *node = (l_node_doentes_t *)malloc(sizeof(l_node_doentes_t));
+        l_node_doentes_t *node;
         l_node_doentes_t *prev, *cur;
+        char *ler_linha = (char *)malloc(256*sizeof(char));
+        int linha = 0;
 
-        if(node != NULL) {
+        while (fgets(ler_linha, 256*sizeof(char), file) != NULL) {
 
-            char ler_linha[100];
-            int linha = 0;
-
-            while (fgets(ler_linha, sizeof(ler_linha), file) != NULL) {
-                linha++;
-                if (ler_linha[strlen(ler_linha) - 1] == '\n') {
-                    ler_linha[strlen(ler_linha) - 1] = '\0';
+            linha++;
+            if (ler_linha[strlen(ler_linha) - 1] == '\n') {
+                ler_linha[strlen(ler_linha) - 1] = '\0';
+            }
+            if (linha % 7 == 1) {
+                node = (l_node_doentes_t *)malloc(sizeof(l_node_doentes_t));
+                if(node == NULL){
+                    break;
                 }
-                if (linha % 6 == 1) {
-                    int id = string_to_int(ler_linha);
+                node->doente.ID = string_to_int(ler_linha);
+            }
+            else if (linha % 7 == 2){
+                strcpy(node->doente.nome, ler_linha);
+            }
+            else if (linha % 7 == 3){
+                char *token;
+                token = strtok(ler_linha, "/");
+                node->doente.dia = string_to_int(token);
+                token = strtok(NULL, "/");
+                node->doente.mes = string_to_int(token);
+                token = strtok(NULL, "/");
+                if(token[strlen(token) - 1] == '\n'){
+                    token[strlen(token) - 1] = '\0';
                 }
-
-
+                node->doente.ano = string_to_int(token);
+            }
+            else if(linha % 7 == 4){
+                strcpy(node->doente.cc, ler_linha);
+            }
+            else if(linha % 7 == 5){
+                node->doente.telemovel = string_to_long(ler_linha);
+            }
+            else if(linha % 7 == 6){
+                strcpy(node->doente.email, ler_linha);
+                search(list, node->doente.ID, &prev, &cur);
+                if(prev != NULL){
+                    prev->next = node;
+                    node->next = cur;
+                }
+                else{
+                    list->front = node;
+                    node->next = cur;
+                }
+                list->num_elems++;
+                linha = 0;
             }
         }
-
+        free(ler_linha);
     }
 
+    fclose(file);
 
 }
 

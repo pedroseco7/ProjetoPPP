@@ -9,5 +9,5 @@ void insert(list_doentes_t *list, int contador);
 void search(list_doentes_t *list,int ID, l_node_doentes_t **prev, l_node_doentes_t **cur);
 void remove_doente(list_doentes_t *list, int ID);
 void ordem_alfabetica(list_doentes_t *list);
-
+void recolhe_info_fich(list_doentes_t *list);
 #endif 
