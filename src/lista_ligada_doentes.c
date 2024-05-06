@@ -240,7 +240,6 @@ void remove_doente(list_doentes_t *list, int ID, FILE *file){
 
     search(list, ID, &prev, &cur);
 
-    file = fopen("docs/doentes.txt","w");
 
     if(cur != NULL && cur->doente.ID == ID){
 

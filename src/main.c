@@ -81,13 +81,13 @@ int main(){
     int num_opcao;
     list_doentes_t listDoentes;
 
+    init(&listDoentes);
+
     FILE *file = fopen("docs/doentes.txt","r");
     int contador_ID = 0;
 
     if(file == NULL){ //se nao existir
         printf("A criar o ficheiro dos doentes...\n");
-        file = fopen("docs/doentes.txt","w");
-        fclose(file);
     }
     else{ //se ja existir, temos de percorrer o ficheiro, encontrar o ID de maior valor para que seja retomado com o valor do ID
 
@@ -160,7 +160,7 @@ int main(){
                     }
                 }
 
-                
+                file = fopen("docs/doentes.txt","w");
 
                 if (file == NULL) {
                     printf("Erro ao abrir o arquivo doentes.txt para escrita.\n");
