@@ -38,6 +38,42 @@ long string_to_long(char str[]) {
     return resultado;
 }
 
+float string_to_double(char str[]) {
+    double resultado = 0.0;
+    double decimal = 0.1; 
+    int i = 0;
+    int ponto_decimal = 0; 
+
+    while (str[i] != '\0') {
+        if ((str[i] >= '0' && str[i] <= '9') || str[i] == '.') {
+            if (str[i] == '.') {
+                ponto_decimal = 1;
+            } else {
+                if (!ponto_decimal) {
+                    resultado = resultado * 10 + (str[i] - '0');
+                } else {
+                    resultado += (str[i] - '0') * decimal;
+                    decimal *= 0.1;
+                }
+            }
+        } else {
+            return 0.0; 
+        }
+        i++;
+    }
+    return resultado;
+}
+
+
+void verifica(char nome[]){
+    while(string_to_long(nome) == 0){
+        printf("Número de ID inválido, introduza novamente:\n");
+        fgets(nome, 50, stdin);
+        if(nome[strlen(nome) - 1] == '\n'){
+            nome[strlen(nome) - 1] = '\0';
+        }
+    }
+}
 int main(){
 
 
@@ -73,7 +109,9 @@ int main(){
 
         fclose(file);
     }
+
     recolhe_info_fich(&listDoentes);
+    
     do{
         
         printf("\n=== Menu ===\n");
@@ -122,8 +160,22 @@ int main(){
                     }
                 }
 
-                remove_doente(&listDoentes,string_to_int(var));
+                
 
+                if (file == NULL) {
+                    printf("Erro ao abrir o arquivo doentes.txt para escrita.\n");
+                    return -1;
+                }
+                
+                
+
+                remove_doente(&listDoentes,string_to_int(var), file);
+
+                
+
+                fclose(file);
+
+                
                 break;
             
             case 3:
@@ -142,11 +194,107 @@ int main(){
 
             case 6:
                 //Registar as tensões, o peso e a altura de um determinado doente num determinado dia. 
-                printf("i");
+
+                int ID_num, dia , mes, ano, ten_max, ten_min;
+                double altura, peso;
+
+                do {
+                    printf("Por favor, insira o ID do paciente: ");
+                    char ID[50];
+                    fgets(ID, 50, stdin);
+                    if (ID[strlen(ID) - 1] == '\n') {
+                        ID[strlen(ID) - 1] = '\0';
+                    }
+                    ID_num = string_to_int(ID);
+                } while (ID_num == 0 || ID_num == INT_MAX); // Verifica se é zero ou se está no limite superior de um inteiro
+
+
+                do {
+                    printf("Por favor, insira o dia do registo: ");
+                    char input_dia[50];
+                    fgets(input_dia, 50, stdin);
+                    if (input_dia[strlen(input_dia) - 1] == '\n') {
+                        input_dia[strlen(input_dia) - 1] = '\0';
+                    }
+                    dia = string_to_int(input_dia);
+                } while (dia < 1 || dia > 31);
+
+                // Solicitar e verificar o mês
+                do {
+                    printf("Por favor, insira o mês do registo: ");
+                    char input_mes[50];
+                    fgets(input_mes, 50, stdin);
+                    if (input_mes[strlen(input_mes) - 1] == '\n') {
+                        input_mes[strlen(input_mes) - 1] = '\0';
+                    }
+                    mes = string_to_int(input_mes);
+                } while (mes < 1 || mes > 12);
+
+                // Solicitar e verificar o ano
+                do {
+                    printf("Por favor, insira o ano do registo: ");
+                    char input_ano[50];
+                    fgets(input_ano, 50, stdin);
+                    if (input_ano[strlen(input_ano) - 1] == '\n') {
+                        input_ano[strlen(input_ano) - 1] = '\0';
+                    }
+                    ano = string_to_int(input_ano);
+                } while (ano > 2024);
+
+                // Solicitar e verificar a tensão máxima
+                do {
+                    printf("Por favor, insira a tensão máxima (mmHg) do registo: ");
+                    char input_ten_max[50];
+                    fgets(input_ten_max, 50, stdin);
+                    if (input_ten_max[strlen(input_ten_max) - 1] == '\n') {
+                        input_ten_max[strlen(input_ten_max) - 1] = '\0';
+                    }
+                    ten_max = string_to_int(input_ten_max);
+                } while (ten_max < 0 || ten_max > 500); // Exemplo de valores válidos, ajuste conforme necessário
+
+                // Solicitar e verificar a tensão mínima
+                do {
+                    printf("Por favor, insira a tensão mínima (mmHg) do registo: ");
+                    char input_ten_min[50];
+                    fgets(input_ten_min, 50, stdin);
+                    if (input_ten_min[strlen(input_ten_min) - 1] == '\n') {
+                        input_ten_min[strlen(input_ten_min) - 1] = '\0';
+                    }
+                    ten_min = string_to_int(input_ten_min);
+                } while (ten_min < 0 || ten_min > 300); // Exemplo de valores válidos, ajuste conforme necessário
+
+                // Solicitar e verificar o peso
+                do {
+                    printf("Por favor, insira o peso (kg) do registo: ");
+                    char input_peso[50];
+                    fgets(input_peso, 50, stdin);
+                    if (input_peso[strlen(input_peso) - 1] == '\n') {
+                        input_peso[strlen(input_peso) - 1] = '\0';
+                    }
+                    peso = string_to_double(input_peso);
+                    printf("%f",peso);
+                } while (peso < 0); // Exemplo de valores válidos, ajuste conforme necessário
+
+                // Solicitar e verificar a altura
+                do {
+                    printf("Por favor, insira a altura (m) do registo: ");
+                    char input_altura[50];
+                    fgets(input_altura, 50, stdin);
+                    if (input_altura[strlen(input_altura) - 1] == '\n') {
+                        input_altura[strlen(input_altura) - 1] = '\0';
+                    }
+                    altura = string_to_double(input_altura);
+                    printf("%f",altura);
+                } while (altura <0); // Exemplo de valores válidos, ajuste conforme necessário
+
+                
+                inserir_registos(&listDoentes,dia, mes, ano, ID_num , ten_max, ten_min, peso, altura);
+
                 break;
             
             case 7:
                 //Sair
+                
                 printf("A sair...\n");
                 break;
 

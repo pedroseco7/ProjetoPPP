@@ -4,7 +4,7 @@
 #include <cabecalho.h>
 #include <string.h>
 
-void remove_doente(list_doentes_t *list, int ID);
+void remove_doente(list_doentes_t *list, int ID, FILE *file);
 
 void init(list_doentes_t *list){
 
@@ -41,7 +41,6 @@ void escreve_ficheiro(int ID, char nome[], int dia, int mes, int ano, char cc[],
     FILE *f = fopen("docs/doentes.txt", "a+");
     if (f == NULL) {
         printf("Erro ao abrir o arquivo doentes.txt.\n");
-
         return;
     }
     fprintf(f,"%d\n",ID);
@@ -55,6 +54,7 @@ void escreve_ficheiro(int ID, char nome[], int dia, int mes, int ano, char cc[],
     fprintf(f,"%ld\n",telemovel);
     fputs(email,f);
 
+    
     fclose(f);
 
 }
@@ -66,6 +66,8 @@ void insert(list_doentes_t *list, int contador){
     if(node != NULL){
 
         char var[50];
+
+
 
         node->doente.registos = (list_registo_t *)malloc(sizeof(list_registo_t));
         node->doente.registos->num_elem = 0;
@@ -201,9 +203,10 @@ void insert(list_doentes_t *list, int contador){
         }
         strcpy(node->doente.email, var);
 
+        printf("ID do novo doente: %d\n", node->doente.ID); // Adicionado para debug
         escreve_ficheiro(node->doente.ID,node->doente.nome,node->doente.dia,node->doente.mes,node->doente.ano,node->doente.cc,node->doente.telemovel,node->doente.email);
 
- 
+        
     }
 
     search(list, node->doente.ID, &prev, &cur);
@@ -220,13 +223,17 @@ void insert(list_doentes_t *list, int contador){
 }
 
 
-void remove_doente(list_doentes_t *list, int ID){
+void remove_doente(list_doentes_t *list, int ID, FILE *file){
 
     l_node_doentes_t *prev, *cur;
 
     search(list, ID, &prev, &cur);
 
+    file = fopen("docs/doentes.txt","w");
+
     if(cur != NULL && cur->doente.ID == ID){
+
+        
 
         l_node_registos_t *reg_prev = NULL;
         l_node_registos_t *reg_cur = cur->doente.registos->front;
@@ -253,6 +260,15 @@ void remove_doente(list_doentes_t *list, int ID){
     }
     else{
         printf("ID não encontrado.\n");
+    }
+
+    l_node_doentes_t *atual = list->front;
+
+    while(atual != NULL){
+        if (atual->doente.registos != NULL) { // Verificar se a lista de registros foi alocada corretamente
+            escreve_ficheiro(atual->doente.ID, atual->doente.nome, atual->doente.dia, atual->doente.mes, atual->doente.ano, atual->doente.cc, atual->doente.telemovel, atual->doente.email);
+        }
+        atual = atual->next;
     }
 }
 
@@ -362,3 +378,74 @@ void recolhe_info_fich(list_doentes_t *list){
 }
 
 //ver a segurança no email -> está valido quando é p.e pedro@@gmail.com
+
+void inserir_registos(list_doentes_t *list, int dia, int mes, int ano, int ID, int ten_max, int ten_min, float peso, float alt) {
+
+    l_node_doentes_t *atual = list->front;
+
+    printf("\n%d\n",atual->doente.ID);
+
+    while (atual != NULL && atual->doente.ID != ID) {
+        atual = atual->next;
+    }
+
+    if (atual == NULL) {
+        printf("Não foi encontrado nenhum paciente com esse ID\n");
+        return;
+    }
+
+    printf("\n%d\n",atual->doente.ID); 
+
+    if (atual->doente.registos == NULL) {
+        atual->doente.registos = (list_registo_t *)malloc(sizeof(list_registo_t));
+        if (atual->doente.registos == NULL) {
+            printf("Ocorreu um erro ao alocar memória\n");
+            return;
+        }
+        atual->doente.registos->num_elem = 0;
+        atual->doente.registos->front = NULL;
+    }
+
+    registo_t novo_registo;
+
+    novo_registo.dia = dia;
+    novo_registo.mes = mes;
+    novo_registo.ano = ano;
+    novo_registo.altura = alt;
+    novo_registo.peso = peso;
+    novo_registo.ten_max = ten_max;
+    novo_registo.ten_min = ten_min;
+    novo_registo.ID = ID;
+    
+    l_node_registos_t *novo_lista_registo = (l_node_registos_t *)malloc(sizeof(l_node_registos_t));
+    if (novo_lista_registo == NULL) {
+        printf("Ocorreu um erro ao alocar memória\n");
+        return;
+    }
+
+    // Preencher o novo nó com o registro e definir next como NULL
+    novo_lista_registo->registo = novo_registo;
+    novo_lista_registo->next = NULL;
+
+    // Se a lista de registros estiver vazia, definir o novo registro como o primeiro
+    if (atual->doente.registos->front == NULL) {
+        atual->doente.registos->front = novo_lista_registo;
+    } else {
+        // Encontrar o último nó da lista de registros
+        l_node_registos_t *ultimo = atual->doente.registos->front;
+        while (ultimo->next != NULL) {
+            ultimo = ultimo->next;
+        }
+
+        // Atualizar o ponteiro next do último nó para apontar para o novo registro
+        ultimo->next = novo_lista_registo;
+    }
+
+    
+    atual->doente.registos->num_elem++;
+    printf("Registo adicionado com sucesso para o doente com ID %d.\n", ID);
+}
+    
+
+
+
