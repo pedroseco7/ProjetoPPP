@@ -37,6 +37,17 @@ void search(list_doentes_t *list,int ID, l_node_doentes_t **prev, l_node_doentes
     }
 }
 
+void search_nome(list_doentes_t *list, char nome[], l_node_doentes_t **prev, l_node_doentes_t **cur){
+
+    *prev = NULL;
+    *cur = list -> front;
+    while(*cur != NULL && strcmp((*cur)->doente.nome,nome) < 0){
+        *prev = *cur;
+        *cur = (*cur)->next;
+    }
+
+}
+
 void escreve_ficheiro(int ID, char nome[], int dia, int mes, int ano, char cc[], long telemovel, char email[]){
     FILE *f = fopen("docs/doentes.txt", "a+");
     if (f == NULL) {
@@ -209,7 +220,7 @@ void insert(list_doentes_t *list, int contador){
         
     }
 
-    search(list, node->doente.ID, &prev, &cur);
+    search_nome(list, node->doente.nome, &prev, &cur);
 
     if(prev != NULL){
         prev->next = node;
@@ -274,39 +285,12 @@ void remove_doente(list_doentes_t *list, int ID, FILE *file){
 
 void ordem_alfabetica(list_doentes_t *list){
 
-    l_node_doentes_t *elem1, *elem2;
-    char array_nomes[list->num_elems-1][100];
-    char ultima_str[100];
-    elem1 = list->front;
-    for(size_t i = 0; i < list->num_elems; i++){
-        elem2 = elem1;
-        strcpy(ultima_str, elem1->doente.nome);
-        for(size_t k = i; k < list->num_elems; k++){
-
-            if(strcmp(ultima_str, elem2->doente.nome) > 0){
-                strcpy(ultima_str, elem2->doente.nome);
-            }
-            elem2 = elem2->next;
-
-        }
-        strcpy(array_nomes[i], elem1->doente.nome);
-        elem1 = elem1->next;
-    }
-
-    for(size_t i = 0; i < list->num_elems; i++){
-        for(size_t j = i; j < list->num_elems; j++) {
-            char aux[100];
-            if(strcmp(array_nomes[i], array_nomes[j]) > 0){
-                strcpy(aux, array_nomes[i]);
-                strcpy(array_nomes[i], array_nomes[j]);
-                strcpy(array_nomes[j], aux);
-            }
-
-        }
-    }
+    l_node_doentes_t *cur = NULL;
+    cur = list->front;
     printf("Ordem Alfabética dos Doentes:\n");
-    for(size_t i = 0; i < list->num_elems; i++){
-        printf("%s\n", array_nomes[i]);
+    while(cur != NULL){
+        printf("%s\n", (cur)->doente.nome);
+        cur = (cur)->next;
     }
 }
 
@@ -357,7 +341,7 @@ void recolhe_info_fich(list_doentes_t *list){
             }
             else if(linha % 7 == 6){
                 strcpy(node->doente.email, ler_linha);
-                search(list, node->doente.ID, &prev, &cur);
+                search_nome(list, node->doente.nome, &prev, &cur);
                 if(prev != NULL){
                     prev->next = node;
                     node->next = cur;
