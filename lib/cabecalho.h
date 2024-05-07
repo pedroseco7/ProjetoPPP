@@ -10,6 +10,7 @@ void search(list_doentes_t *list,int ID, l_node_doentes_t **prev, l_node_doentes
 void remove_doente(list_doentes_t *list, int ID,FILE *file);
 void ordem_alfabetica(list_doentes_t *list);
 void recolhe_info_fich(list_doentes_t *list);
+void insere_ordenado(list_doentes_t *list, Doente doente);
 void inserir_registos(list_doentes_t *list,int dia, int mes, int ano, int ID, int ten_max, int ten_min, float peso, float alt);
 float string_to_double(char str[]);
 #endif 

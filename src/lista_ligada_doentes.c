@@ -70,6 +70,24 @@ void escreve_ficheiro(int ID, char nome[], int dia, int mes, int ano, char cc[],
 
 }
 
+void insere_ordenado(list_doentes_t *list, Doente doente) {
+    l_node_doentes_t *novo = malloc(sizeof(l_node_doentes_t));
+    novo->doente = doente;
+    novo->next = NULL;
+
+    if (list->front == NULL || list->front->doente.ID >= doente.ID) {
+        novo->next = list->front;
+        list->front = novo;
+    } else {
+        l_node_doentes_t *atual = list->front;
+        while (atual->next != NULL && atual->next->doente.ID < doente.ID) {
+            atual = atual->next;
+        }
+        novo->next = atual->next;
+        atual->next = novo;
+    }
+}
+
 
 void insert(list_doentes_t *list, int contador){
     l_node_doentes_t *node = (l_node_doentes_t *)malloc(sizeof(l_node_doentes_t));
@@ -233,9 +251,7 @@ void insert(list_doentes_t *list, int contador){
     list->num_elems++;
 }
 
-
 void remove_doente(list_doentes_t *list, int ID, FILE *file){
-
     // Procura pelo doente com o ID especificado
     l_node_doentes_t *prev, *cur;
     search(list, ID, &prev, &cur);
@@ -262,8 +278,23 @@ void remove_doente(list_doentes_t *list, int ID, FILE *file){
         }
         free(cur);
 
-        // Atualiza o arquivo com os doentes restantes
+        // Cria uma nova lista e insere os doentes ordenados por ID
+        list_doentes_t *nova_lista = (list_doentes_t*)malloc(sizeof(list_doentes_t));
+        nova_lista->front = NULL;
+        nova_lista->num_elems = 0;
         l_node_doentes_t *atual = list->front;
+        while (atual != NULL) {
+            insere_ordenado(nova_lista, atual->doente);
+            atual = atual->next;
+        }
+
+        // Substitui a lista original pela nova lista
+        free(list);
+        list = nova_lista;
+
+        // Atualiza o arquivo com os doentes restantes
+        atual = list->front;
+
         while(atual != NULL){
             if (atual->doente.registos != NULL) {
                 escreve_ficheiro(atual->doente.ID, atual->doente.nome, atual->doente.dia, atual->doente.mes, atual->doente.ano, atual->doente.cc, atual->doente.telemovel, atual->doente.email);
@@ -278,7 +309,6 @@ void remove_doente(list_doentes_t *list, int ID, FILE *file){
         printf("ID não encontrado.\n");
     }
 }
-
 
 void ordem_alfabetica(list_doentes_t *list){
 
