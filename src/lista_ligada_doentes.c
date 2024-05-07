@@ -236,26 +236,24 @@ void insert(list_doentes_t *list, int contador){
 
 void remove_doente(list_doentes_t *list, int ID, FILE *file){
 
+    // Procura pelo doente com o ID especificado
     l_node_doentes_t *prev, *cur;
-
     search(list, ID, &prev, &cur);
 
-
+    // Se o doente for encontrado
     if(cur != NULL && cur->doente.ID == ID){
 
-        
-
+        // Limpa os registros do doente
         l_node_registos_t *reg_prev = NULL;
         l_node_registos_t *reg_cur = cur->doente.registos->front;
-
         while(reg_cur != NULL){
             reg_prev = reg_cur;
             reg_cur = reg_cur->next;
             free(reg_prev);
         }
+        free(cur->doente.registos);
 
-        free(cur->doente.registos); // Liberar a memória da lista de registos
-
+        // Remove o nó doente da lista
         if(prev != NULL){
             prev->next = cur->next;
         }
@@ -264,23 +262,23 @@ void remove_doente(list_doentes_t *list, int ID, FILE *file){
         }
         free(cur);
 
-        printf("Doente removido com sucesso!\n");
+        // Atualiza o arquivo com os doentes restantes
+        l_node_doentes_t *atual = list->front;
+        while(atual != NULL){
+            if (atual->doente.registos != NULL) {
+                escreve_ficheiro(atual->doente.ID, atual->doente.nome, atual->doente.dia, atual->doente.mes, atual->doente.ano, atual->doente.cc, atual->doente.telemovel, atual->doente.email);
+            }
+            atual = atual->next;
+        }
 
+        printf("Doente removido com sucesso!\n");
         list->num_elems--;
     }
     else{
         printf("ID não encontrado.\n");
     }
-
-    l_node_doentes_t *atual = list->front;
-
-    while(atual != NULL){
-        if (atual->doente.registos != NULL) { // Verificar se a lista de registros foi alocada corretamente
-            escreve_ficheiro(atual->doente.ID, atual->doente.nome, atual->doente.dia, atual->doente.mes, atual->doente.ano, atual->doente.cc, atual->doente.telemovel, atual->doente.email);
-        }
-        atual = atual->next;
-    }
 }
+
 
 void ordem_alfabetica(list_doentes_t *list){
 
