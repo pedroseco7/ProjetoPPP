@@ -4,8 +4,6 @@
 #include <cabecalho.h>
 #include <string.h>
 
-void remove_doente(list_doentes_t *list, int ID, FILE *file);
-
 void init(list_doentes_t *list){
 
     list -> num_elems = 0;
@@ -64,6 +62,7 @@ void escreve_ficheiro(int ID, char nome[], int dia, int mes, int ano, char cc[],
     fputs("\n",f);
     fprintf(f,"%ld\n",telemovel);
     fputs(email,f);
+    fputs("\n", f);
 
     
     fclose(f);
@@ -251,7 +250,7 @@ void insert(list_doentes_t *list, int contador){
     list->num_elems++;
 }
 
-void remove_doente(list_doentes_t *list, int ID, FILE *file){
+void remove_doente(list_doentes_t *list, int ID){
     // Procura pelo doente com o ID especificado
     l_node_doentes_t *prev, *cur;
     search(list, ID, &prev, &cur);
@@ -259,50 +258,14 @@ void remove_doente(list_doentes_t *list, int ID, FILE *file){
     // Se o doente for encontrado
     if(cur != NULL && cur->doente.ID == ID){
 
-        // Limpa os registros do doente
-        l_node_registos_t *reg_prev = NULL;
-        l_node_registos_t *reg_cur = cur->doente.registos->front;
-        while(reg_cur != NULL){
-            reg_prev = reg_cur;
-            reg_cur = reg_cur->next;
-            free(reg_prev);
-        }
-        free(cur->doente.registos);
-
-        // Remove o nó doente da lista
         if(prev != NULL){
-            prev->next = cur->next;
+            prev -> next = cur -> next;
         }
+
         else{
             list->front = cur->next;
         }
         free(cur);
-
-        // Cria uma nova lista e insere os doentes ordenados por ID
-        list_doentes_t *nova_lista = (list_doentes_t*)malloc(sizeof(list_doentes_t));
-        nova_lista->front = NULL;
-        nova_lista->num_elems = 0;
-        l_node_doentes_t *atual = list->front;
-        while (atual != NULL) {
-            insere_ordenado(nova_lista, atual->doente);
-            atual = atual->next;
-        }
-
-        // Substitui a lista original pela nova lista
-        free(list);
-        list = nova_lista;
-
-        // Atualiza o arquivo com os doentes restantes
-        atual = list->front;
-
-        while(atual != NULL){
-            if (atual->doente.registos != NULL) {
-                escreve_ficheiro(atual->doente.ID, atual->doente.nome, atual->doente.dia, atual->doente.mes, atual->doente.ano, atual->doente.cc, atual->doente.telemovel, atual->doente.email);
-            }
-            atual = atual->next;
-        }
-
-        printf("Doente removido com sucesso!\n");
         list->num_elems--;
     }
     else{
@@ -455,6 +418,27 @@ void inserir_registos(list_doentes_t *list, int dia, int mes, int ano, int ID, i
     
     atual->doente.registos->num_elem++;
     printf("Registo adicionado com sucesso para o doente com ID %d.\n", ID);
+}
+
+void mostra_nome_id(list_doentes_t *list){
+
+    l_node_doentes_t *cur;
+    cur = list->front;
+    printf("Nome - ID\n");
+    while(cur != NULL){
+        printf("%s - %d\n", cur->doente.nome, cur->doente.ID);
+        cur = cur->next;
+    }
+}
+
+void teste(list_doentes_t *list){
+
+    l_node_doentes_t *cur;
+    cur = list->front;
+    while(cur != NULL){
+        escreve_ficheiro(cur->doente.ID, cur->doente.nome, cur->doente.dia, cur->doente.mes, cur->doente.ano, cur->doente.cc, cur->doente.telemovel, cur->doente.email);
+        cur = cur->next;
+    }
 }
     
 

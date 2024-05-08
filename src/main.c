@@ -88,6 +88,8 @@ int main(){
 
     if(file == NULL){ //se nao existir
         printf("A criar o ficheiro dos doentes...\n");
+        FILE *file = fopen("docs/doentes.txt", "w");
+        fclose(file);
     }
     else{ //se ja existir, temos de percorrer o ficheiro, encontrar o ID de maior valor para que seja retomado com o valor do ID
 
@@ -142,6 +144,7 @@ int main(){
                 break;
             case 2:
                 //Eliminar um doente existente
+                mostra_nome_id(&listDoentes);
                 char var[50];
 
 
@@ -166,12 +169,9 @@ int main(){
                     printf("Erro ao abrir o arquivo doentes.txt para escrita.\n");
                     return -1;
                 }
-                
-                
 
-                remove_doente(&listDoentes,string_to_int(var), file);
-
-                
+                remove_doente(&listDoentes,string_to_int(var));
+                teste(&listDoentes);
 
                 fclose(file);
 
