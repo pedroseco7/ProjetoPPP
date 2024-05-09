@@ -29,7 +29,7 @@ void search(list_doentes_t *list,int ID, l_node_doentes_t **prev, l_node_doentes
 
     *prev = NULL;
     *cur = list -> front;
-    while(*cur != NULL && (*cur)->doente.ID < ID){
+    while(*cur != NULL && (*cur)->doente.ID != ID){
         *prev = *cur;
         *cur = (*cur)->next;
     }
@@ -62,7 +62,6 @@ void escreve_ficheiro(int ID, char nome[], int dia, int mes, int ano, char cc[],
     fputs("\n",f);
     fprintf(f,"%ld\n",telemovel);
     fputs(email,f);
-    fputs("\n", f);
 
     
     fclose(f);
@@ -86,6 +85,7 @@ void insere_ordenado(list_doentes_t *list, Doente doente) {
         atual->next = novo;
     }
 }
+
 
 
 void insert(list_doentes_t *list, int contador){
