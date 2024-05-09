@@ -4,6 +4,8 @@
 #include <cabecalho.h>
 #include <string.h>
 
+void remove_doente(list_doentes_t *list, int ID, FILE *file);
+
 void init(list_doentes_t *list){
 
     list -> num_elems = 0;
@@ -29,7 +31,7 @@ void search(list_doentes_t *list,int ID, l_node_doentes_t **prev, l_node_doentes
 
     *prev = NULL;
     *cur = list -> front;
-    while(*cur != NULL && (*cur)->doente.ID != ID){
+    while(*cur != NULL && (*cur)->doente.ID < ID){
         *prev = *cur;
         *cur = (*cur)->next;
     }
@@ -46,22 +48,44 @@ void search_nome(list_doentes_t *list, char nome[], l_node_doentes_t **prev, l_n
 
 }
 
-void insere_ordem_id(list_doentes_t *list, Doente doente) {
-    l_node_doentes_t *node = (l_node_doentes_t *)malloc(sizeof(l_node_doentes_t));
-    l_node_doentes_t *prev, *cur;
-    if(node != NULL){
-        node->doente = doente;
-        search(list, node->doente.ID, &prev, &cur);
+void escreve_ficheiro(int ID, char nome[], int dia, int mes, int ano, char cc[], long telemovel, char email[]){
+    FILE *f = fopen("docs/doentes.txt", "a+");
+    if (f == NULL) {
+        printf("Erro ao abrir o arquivo doentes.txt.\n");
+        return;
     }
-    if(prev != NULL){
-        prev->next = node;
-        node->next = cur;
-    }
-    else{
-        list->front = node;
-        node->next = cur;
-    }
+    fprintf(f,"%d\n",ID);
+    fputs(nome,f);
+    fputs("\n",f);
+    fprintf(f,"%d/",dia);
+    fprintf(f,"%d/",mes);
+    fprintf(f,"%d\n",ano);
+    fputs(cc,f);
+    fputs("\n",f);
+    fprintf(f,"%ld\n",telemovel);
+    fputs(email,f);
 
+    
+    fclose(f);
+
+}
+
+void insere_ordenado(list_doentes_t *list, Doente doente) {
+    l_node_doentes_t *novo = malloc(sizeof(l_node_doentes_t));
+    novo->doente = doente;
+    novo->next = NULL;
+
+    if (list->front == NULL || list->front->doente.ID >= doente.ID) {
+        novo->next = list->front;
+        list->front = novo;
+    } else {
+        l_node_doentes_t *atual = list->front;
+        while (atual->next != NULL && atual->next->doente.ID < doente.ID) {
+            atual = atual->next;
+        }
+        novo->next = atual->next;
+        atual->next = novo;
+    }
 }
 
 
@@ -202,9 +226,6 @@ void insert(list_doentes_t *list, int contador){
                     break;
                 }
             }
-            if(var[strlen(var) - 1] == '\n'){
-                var[strlen(var) - 1] = '\0';
-            }
             if(arroba_counter != 1) {
                 printf("Email inválido, introduza novamente:\n");
             }
@@ -212,6 +233,8 @@ void insert(list_doentes_t *list, int contador){
         strcpy(node->doente.email, var);
 
         printf("ID do novo doente: %d\n", node->doente.ID); // Adicionado para debug
+        escreve_ficheiro(node->doente.ID,node->doente.nome,node->doente.dia,node->doente.mes,node->doente.ano,node->doente.cc,node->doente.telemovel,node->doente.email);
+
         
     }
 
@@ -228,7 +251,7 @@ void insert(list_doentes_t *list, int contador){
     list->num_elems++;
 }
 
-void remove_doente(list_doentes_t *list, int ID){
+void remove_doente(list_doentes_t *list, int ID, FILE *file){
     // Procura pelo doente com o ID especificado
     l_node_doentes_t *prev, *cur;
     search(list, ID, &prev, &cur);
@@ -236,14 +259,50 @@ void remove_doente(list_doentes_t *list, int ID){
     // Se o doente for encontrado
     if(cur != NULL && cur->doente.ID == ID){
 
-        if(prev != NULL){
-            prev -> next = cur -> next;
+        // Limpa os registros do doente
+        l_node_registos_t *reg_prev = NULL;
+        l_node_registos_t *reg_cur = cur->doente.registos->front;
+        while(reg_cur != NULL){
+            reg_prev = reg_cur;
+            reg_cur = reg_cur->next;
+            free(reg_prev);
         }
+        free(cur->doente.registos);
 
+        // Remove o nó doente da lista
+        if(prev != NULL){
+            prev->next = cur->next;
+        }
         else{
             list->front = cur->next;
         }
         free(cur);
+
+        // Cria uma nova lista e insere os doentes ordenados por ID
+        list_doentes_t *nova_lista = (list_doentes_t*)malloc(sizeof(list_doentes_t));
+        nova_lista->front = NULL;
+        nova_lista->num_elems = 0;
+        l_node_doentes_t *atual = list->front;
+        while (atual != NULL) {
+            insere_ordenado(nova_lista, atual->doente);
+            atual = atual->next;
+        }
+
+        // Substitui a lista original pela nova lista
+        free(list);
+        list = nova_lista;
+
+        // Atualiza o arquivo com os doentes restantes
+        atual = list->front;
+
+        while(atual != NULL){
+            if (atual->doente.registos != NULL) {
+                escreve_ficheiro(atual->doente.ID, atual->doente.nome, atual->doente.dia, atual->doente.mes, atual->doente.ano, atual->doente.cc, atual->doente.telemovel, atual->doente.email);
+            }
+            atual = atual->next;
+        }
+
+        printf("Doente removido com sucesso!\n");
         list->num_elems--;
     }
     else{
@@ -255,9 +314,7 @@ void ordem_alfabetica(list_doentes_t *list){
 
     l_node_doentes_t *cur = NULL;
     cur = list->front;
-    printf("\n");
-    printf("=== Ordem Alfabética dos Doentes ===\n");
-    printf("\n");
+    printf("Ordem Alfabética dos Doentes:\n");
     while(cur != NULL){
         printf("%s\n", (cur)->doente.nome);
         cur = (cur)->next;
@@ -399,44 +456,7 @@ void inserir_registos(list_doentes_t *list, int dia, int mes, int ano, int ID, i
     atual->doente.registos->num_elem++;
     printf("Registo adicionado com sucesso para o doente com ID %d.\n", ID);
 }
+    
 
-void mostra_nome_id(list_doentes_t *list){
 
-    l_node_doentes_t *cur;
-    cur = list->front;
-    printf("Nome - ID\n");
-    while(cur != NULL){
-        printf("%s - %d\n", cur->doente.nome, cur->doente.ID);
-        cur = cur->next;
-    }
-}
 
-void escreve_ficheiro(list_doentes_t listDoentes){
-
-    list_doentes_t list_aux;
-    init(list_aux);
-    l_node_doentes_t *cur
-    while(cur != NULL){
-        insere_ordem_id(&list_aux, cur->front->doente);
-        cur = cur->next;
-    }
-    FILE *f = fopen("docs/doentes.txt", "a+");
-    if (f == NULL) {
-        printf("Erro ao abrir o arquivo doentes.txt.\n");
-        return;
-    }
-    fprintf(f,"%d\n",ID);
-    fputs(nome,f);
-    fputs("\n",f);
-    fprintf(f,"%d/",dia);
-    fprintf(f,"%d/",mes);
-    fprintf(f,"%d\n",ano);
-    fputs(cc,f);
-    fputs("\n",f);
-    fprintf(f,"%ld\n",telemovel);
-    fputs(email,f);
-    fputs("\n", f);
-
-    fclose(f);
-
-}
