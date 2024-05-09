@@ -14,6 +14,6 @@ void insere_ordenado(list_doentes_t *list, Doente doente);
 void inserir_registos(list_doentes_t *list,int dia, int mes, int ano, int ID, int ten_max, int ten_min, float peso, float alt);
 float string_to_double(char str[]);
 void mostra_nome_id(list_doentes_t *list);
-void escreve_ficheiro(int ID, char nome[], int dia, int mes, int ano, char cc[], long telemovel, char email[]);
-void teste(list_doentes_t *list);
+void escreve_ficheiro(list_doentes_t *list);
+void insere_ordem_id(list_doentes_t *list, Doente doente);
 #endif 

@@ -29,7 +29,7 @@ void search(list_doentes_t *list,int ID, l_node_doentes_t **prev, l_node_doentes
 
     *prev = NULL;
     *cur = list -> front;
-    while(*cur != NULL && (*cur)->doente.ID < ID){
+    while(*cur != NULL && (*cur)->doente.ID != ID){
         *prev = *cur;
         *cur = (*cur)->next;
     }
@@ -46,45 +46,22 @@ void search_nome(list_doentes_t *list, char nome[], l_node_doentes_t **prev, l_n
 
 }
 
-void escreve_ficheiro(int ID, char nome[], int dia, int mes, int ano, char cc[], long telemovel, char email[]){
-    FILE *f = fopen("docs/doentes.txt", "a+");
-    if (f == NULL) {
-        printf("Erro ao abrir o arquivo doentes.txt.\n");
-        return;
+void insere_ordem_id(list_doentes_t *list, Doente doente) {
+    l_node_doentes_t *node = (l_node_doentes_t *)malloc(sizeof(l_node_doentes_t));
+    l_node_doentes_t *prev, *cur;
+    if(node != NULL){
+        node->doente = doente;
+        search(list, node->doente.ID, &prev, &cur);
     }
-    fprintf(f,"%d\n",ID);
-    fputs(nome,f);
-    fputs("\n",f);
-    fprintf(f,"%d/",dia);
-    fprintf(f,"%d/",mes);
-    fprintf(f,"%d\n",ano);
-    fputs(cc,f);
-    fputs("\n",f);
-    fprintf(f,"%ld\n",telemovel);
-    fputs(email,f);
-    fputs("\n", f);
-
-    
-    fclose(f);
-
-}
-
-void insere_ordenado(list_doentes_t *list, Doente doente) {
-    l_node_doentes_t *novo = malloc(sizeof(l_node_doentes_t));
-    novo->doente = doente;
-    novo->next = NULL;
-
-    if (list->front == NULL || list->front->doente.ID >= doente.ID) {
-        novo->next = list->front;
-        list->front = novo;
-    } else {
-        l_node_doentes_t *atual = list->front;
-        while (atual->next != NULL && atual->next->doente.ID < doente.ID) {
-            atual = atual->next;
-        }
-        novo->next = atual->next;
-        atual->next = novo;
+    if(prev != NULL){
+        prev->next = node;
+        node->next = cur;
     }
+    else{
+        list->front = node;
+        node->next = cur;
+    }
+
 }
 
 
@@ -225,6 +202,9 @@ void insert(list_doentes_t *list, int contador){
                     break;
                 }
             }
+            if(var[strlen(var) - 1] == '\n'){
+                var[strlen(var) - 1] = '\0';
+            }
             if(arroba_counter != 1) {
                 printf("Email inválido, introduza novamente:\n");
             }
@@ -232,8 +212,6 @@ void insert(list_doentes_t *list, int contador){
         strcpy(node->doente.email, var);
 
         printf("ID do novo doente: %d\n", node->doente.ID); // Adicionado para debug
-        escreve_ficheiro(node->doente.ID,node->doente.nome,node->doente.dia,node->doente.mes,node->doente.ano,node->doente.cc,node->doente.telemovel,node->doente.email);
-
         
     }
 
@@ -277,7 +255,9 @@ void ordem_alfabetica(list_doentes_t *list){
 
     l_node_doentes_t *cur = NULL;
     cur = list->front;
-    printf("Ordem Alfabética dos Doentes:\n");
+    printf("\n");
+    printf("=== Ordem Alfabética dos Doentes ===\n");
+    printf("\n");
     while(cur != NULL){
         printf("%s\n", (cur)->doente.nome);
         cur = (cur)->next;
@@ -431,16 +411,32 @@ void mostra_nome_id(list_doentes_t *list){
     }
 }
 
-void teste(list_doentes_t *list){
+void escreve_ficheiro(list_doentes_t listDoentes){
 
-    l_node_doentes_t *cur;
-    cur = list->front;
+    list_doentes_t list_aux;
+    init(list_aux);
+    l_node_doentes_t *cur
     while(cur != NULL){
-        escreve_ficheiro(cur->doente.ID, cur->doente.nome, cur->doente.dia, cur->doente.mes, cur->doente.ano, cur->doente.cc, cur->doente.telemovel, cur->doente.email);
+        insere_ordem_id(&list_aux, cur->front->doente);
         cur = cur->next;
     }
+    FILE *f = fopen("docs/doentes.txt", "a+");
+    if (f == NULL) {
+        printf("Erro ao abrir o arquivo doentes.txt.\n");
+        return;
+    }
+    fprintf(f,"%d\n",ID);
+    fputs(nome,f);
+    fputs("\n",f);
+    fprintf(f,"%d/",dia);
+    fprintf(f,"%d/",mes);
+    fprintf(f,"%d\n",ano);
+    fputs(cc,f);
+    fputs("\n",f);
+    fprintf(f,"%ld\n",telemovel);
+    fputs(email,f);
+    fputs("\n", f);
+
+    fclose(f);
+
 }
-    
-
-
-

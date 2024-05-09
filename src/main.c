@@ -141,6 +141,8 @@ int main(){
             case 1:
                 contador_ID++;
                 insert(&listDoentes, contador_ID);
+                FILE *f = fopen("docs/doentes.txt", "w");
+                if(f == NULL){}
                 break;
             case 2:
                 //Eliminar um doente existente
@@ -171,7 +173,6 @@ int main(){
                 }
 
                 remove_doente(&listDoentes,string_to_int(var));
-                teste(&listDoentes);
 
                 fclose(file);
 
