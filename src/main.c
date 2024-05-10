@@ -40,9 +40,9 @@ long string_to_long(char str[]) {
 
 float string_to_double(char str[]) {
     double resultado = 0.0;
-    double decimal = 0.1; 
+    double decimal = 0.1;
     int i = 0;
-    int ponto_decimal = 0; 
+    int ponto_decimal = 0;
 
     while (str[i] != '\0') {
         if ((str[i] >= '0' && str[i] <= '9') || str[i] == '.') {
@@ -57,7 +57,7 @@ float string_to_double(char str[]) {
                 }
             }
         } else {
-            return 0.0; 
+            return 0.0;
         }
         i++;
     }
@@ -88,6 +88,8 @@ int main(){
 
     if(file == NULL){ //se nao existir
         printf("A criar o ficheiro dos doentes...\n");
+        FILE *file = fopen("docs/doentes.txt", "w");
+        fclose(file);
     }
     else{ //se ja existir, temos de percorrer o ficheiro, encontrar o ID de maior valor para que seja retomado com o valor do ID
 
@@ -104,16 +106,16 @@ int main(){
                 if(id>contador_ID){
                     contador_ID = id;
                 }
-            }   
+            }
         }
 
         fclose(file);
     }
 
     recolhe_info_fich(&listDoentes);
-    
+
     do{
-        
+
         printf("\n=== Menu ===\n");
         printf("1. Adicionar Doente\n");
         printf("2. Eliminar Doente\n");
@@ -132,8 +134,8 @@ int main(){
             opcao[len-1] = '\0';
         }
 
-        num_opcao = string_to_int(opcao);   
-        
+        num_opcao = string_to_int(opcao);
+
 
         switch (num_opcao) {
             case 1:
@@ -142,6 +144,7 @@ int main(){
                 break;
             case 2:
                 //Eliminar um doente existente
+                mostra_nome_id(&listDoentes);
                 char var[50];
 
 
@@ -166,25 +169,21 @@ int main(){
                     printf("Erro ao abrir o arquivo doentes.txt para escrita.\n");
                     return -1;
                 }
-                
-                
 
-                remove_doente(&listDoentes,string_to_int(var), file);
-
-                
+                remove_doente(&listDoentes,string_to_int(var));
 
                 fclose(file);
 
-                
+
                 break;
-            
+
             case 3:
                 ordem_alfabetica(&listDoentes);
                 break;
-            
+
             case 4:
+                //listar_doente_tensao(&listDoentes,100);
                 //Listar os doentes com tensões máximas acima de um determinado valor (por ordem decrescente das mesmas)
-                printf("i");
                 break;
 
             case 5:
@@ -195,7 +194,7 @@ int main(){
             case 6:
                 //Registar as tensões, o peso e a altura de um determinado doente num determinado dia. 
 
-                int ID_num, dia , mes, ano, ten_max, ten_min;
+                /*int ID_num, dia , mes, ano, ten_max, ten_min;
                 double altura, peso;
 
                 do {
@@ -287,14 +286,14 @@ int main(){
                     printf("%f",altura);
                 } while (altura <0); // Exemplo de valores válidos, ajuste conforme necessário
 
-                
-                inserir_registos(&listDoentes,dia, mes, ano, ID_num , ten_max, ten_min, peso, altura);
+
+                inserir_registos(&listDoentes,dia, mes, ano, ID_num , ten_max, ten_min, peso, altura);*/
 
                 break;
-            
+
             case 7:
                 //Sair
-                
+
                 printf("A sair...\n");
                 break;
 
