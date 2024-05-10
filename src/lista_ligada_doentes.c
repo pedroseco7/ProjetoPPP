@@ -110,8 +110,6 @@ void insert(list_doentes_t *list, int contador){
 
         char var[50];
 
-
-
         node->doente.registos = (list_registo_t *)malloc(sizeof(list_registo_t));
         node->doente.registos->num_elem = 0;
         node->doente.registos->front = NULL;
@@ -123,8 +121,18 @@ void insert(list_doentes_t *list, int contador){
         // NOME
 
         printf("Introduza o nome do doente:\n");
-        fgets(var, 30, stdin);
-
+        int verifica = 1;
+        while(verifica == 1){
+            fgets(var, 30, stdin);
+            verifica = 0;
+            for(size_t i = 0; i < strlen(var); i++){
+                if(var[i] > '0' && var[i] < '9'){
+                    verifica = 1;
+                    printf("Nome inválido, introduza novamente:\n");
+                    break;
+                }
+            }
+        }
         if(var[strlen(var) - 1] == '\n'){
             var[strlen(var) - 1] = '\0';
         }
@@ -183,7 +191,7 @@ void insert(list_doentes_t *list, int contador){
 
         // CC
 
-        int verifica = 1;
+        verifica = 1;
         printf("Introduza um número de Cartão de Cidadão válido, com o seguinte formato XXXXXXXX-X-XXX:\n");
         while(verifica == 1) {
             fgets(var, 50, stdin);
@@ -209,21 +217,23 @@ void insert(list_doentes_t *list, int contador){
                 }
             }
         }
-
+        if(var[strlen(var) - 1] == '\n'){
+            var[strlen(var) - 1] = '\0';
+        }
         strcpy(node->doente.cc, var);
         // Telemóvel
 
         printf("Introduza o número de telemóvel do doente:\n");
         fgets(var, 50, stdin);
-        if(var[strlen(var) - 1] == '\n'){
-            var[strlen(var) - 1] = '\0';
-        }
-        while(string_to_long(var) == 0){
+        while(string_to_long(var) == 0 || strlen(var) != 9){
             printf("Número de telemóvel inválido, introduza novamente:\n");
             fgets(var, 50, stdin);
             if(var[strlen(var) - 1] == '\n'){
                 var[strlen(var) - 1] = '\0';
             }
+        }
+        if(var[strlen(var) - 1] == '\n'){
+            var[strlen(var) - 1] = '\0';
         }
         node->doente.telemovel = string_to_long(var);
 
